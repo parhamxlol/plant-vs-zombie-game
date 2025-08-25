@@ -54,47 +54,88 @@ void Handler::zombie_spawn()
 }
 void Handler::melon_strike()
 {
-    for (size_t i = 0; i < mellon_bullets.size(); i++)
-    {
-        if (mellon_bullets[i]->update())
-        {
-            for (size_t j = 0; j < zombies.size(); j++)
-            {
-                if (zombies[j]->same_row(mellon_bullets[i]->get_pos().y + 20) && zombies[j]->same_collum(mellon_bullets[i]->get_pos().x + 27))
-                {
+    std::vector<size_t> zombies_to_remove;
+    std::vector<size_t> mellon_to_remove;
+
+    for (size_t i = 0; i < mellon_bullets.size(); i++) {
+        if (mellon_bullets[i]->update()) {
+            bool hit = false;
+            for (size_t j = 0; j < zombies.size(); j++) {
+                if (zombies[j]->same_row(mellon_bullets[i]->get_pos().y + 20) && 
+                    zombies[j]->same_collum(mellon_bullets[i]->get_pos().x + 27)) {
                     zombies[j]->damage_taken(mellon_bullets[i]->get_damage());
-                    if (zombies[j]->check_health())
-                    {
-                        zombies.erase(zombies.begin() + j);
+                    if (zombies[j]->check_health()) {
+                        zombies_to_remove.push_back(j);
                     }
+                    hit = true;
                     break;
                 }
             }
-            mellon_bullets.erase(mellon_bullets.begin() + i);
+            if (hit) {
+                mellon_to_remove.push_back(i);
+            }
+        }
+    }
+
+    // Remove in reverse order
+    std::sort(zombies_to_remove.begin(), zombies_to_remove.end(), std::greater<size_t>());
+    for (auto idx : zombies_to_remove) {
+        if (idx < zombies.size()) {
+            delete zombies[idx];
+            zombies.erase(zombies.begin() + idx);
+        }
+    }
+
+    std::sort(mellon_to_remove.begin(), mellon_to_remove.end(), std::greater<size_t>());
+    for (auto idx : mellon_to_remove) {
+        if (idx < mellon_bullets.size()) {
+            delete mellon_bullets[idx];
+            mellon_bullets.erase(mellon_bullets.begin() + idx);
         }
     }
 }
 void Handler::bullet_strike()
 {
-    for (size_t i = 0; i < zombies.size(); i++)
-    {
-        for (size_t j = 0; j < bullets.size(); j++)
-        {
+    // Use temporary lists for removal
+    std::vector<size_t> zombies_to_remove;
+    std::vector<size_t> bullets_to_remove;
+
+    for (size_t j = 0; j < bullets.size(); j++) {
+        bool bullet_hit = false;
+        for (size_t i = 0; i < zombies.size(); i++) {
             Vector2f b_p = bullets[j]->get_pos();
-            if (zombies[i]->same_collum(b_p.x) && zombies[i]->same_row(b_p.y))
-            {
+            if (zombies[i]->same_collum(b_p.x) && zombies[i]->same_row(b_p.y)) {
                 zombies[i]->damage_taken(bullets[j]->damage);
-                if (bullets[j]->get_type() == "snow")
-                {
+                if (bullets[j]->get_type() == "snow") {
                     zombies[i]->zombie_freezing();
                 }
 
-                if (zombies[i]->check_health())
-                {
-                    zombies.erase(zombies.begin() + i);
+                if (zombies[i]->check_health()) {
+                    zombies_to_remove.push_back(i);
                 }
-                bullets.erase(bullets.begin() + j);
+                bullet_hit = true;
+                break; // Each bullet can only hit one zombie
             }
+        }
+        if (bullet_hit) {
+            bullets_to_remove.push_back(j);
+        }
+    }
+
+    // Remove zombies and bullets in reverse order
+    std::sort(zombies_to_remove.begin(), zombies_to_remove.end(), std::greater<size_t>());
+    for (auto idx : zombies_to_remove) {
+        if (idx < zombies.size()) {
+            delete zombies[idx];
+            zombies.erase(zombies.begin() + idx);
+        }
+    }
+
+    std::sort(bullets_to_remove.begin(), bullets_to_remove.end(), std::greater<size_t>());
+    for (auto idx : bullets_to_remove) {
+        if (idx < bullets.size()) {
+            delete bullets[idx];
+            bullets.erase(bullets.begin() + idx);
         }
     }
 }
