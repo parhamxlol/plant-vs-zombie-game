@@ -54,7 +54,7 @@ System::System(int width, int height)
   gameoverSprite.setPosition(0, 0);
   gameoverSprite.setScale(1.66, 1.3);
   winSprite.setPosition(0, 0);
-  winSprite.setScale(1.09, 1.02);
+  winSprite.setScale(0.85, 0.61);
   if (!font.loadFromFile(FONTS_PATH + FONT_ADD))
     debug("FONT load faild");
 
