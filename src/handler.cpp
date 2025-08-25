@@ -19,7 +19,7 @@ void Handler::zombie_spawn()
             new_zombie(z);
         }
     }
-    if (FIRST_WAVE_TIME <= total_time_.asSeconds() < SECOND_WAVE_TIME)
+    if ((FIRST_WAVE_TIME <= total_time_.asSeconds() ) && (total_time_.asSeconds()< SECOND_WAVE_TIME))
     {
         Time zelapsed = normal_zombie_clock.getElapsedTime();
         if (zelapsed.asMilliseconds() >= ZOMBIE_TIME_SPAWN)
@@ -31,7 +31,7 @@ void Handler::zombie_spawn()
             new_zombie(z);
         }
     }
-    if (SECOND_WAVE_TIME <= total_time_.asSeconds() <= TOTAL_TIME)
+    if ((SECOND_WAVE_TIME <= total_time_.asSeconds()) && (total_time_.asSeconds() <= TOTAL_TIME))
     {
       Time zelapsed = normal_zombie_clock.getElapsedTime();
     if(zelapsed.asMilliseconds() >= ZOMBIE_TIME_SPAWN){
@@ -54,11 +54,11 @@ void Handler::zombie_spawn()
 }
 void Handler::melon_strike()
 {
-    for (int i = 0; i < mellon_bullets.size(); i++)
+    for (size_t i = 0; i < mellon_bullets.size(); i++)
     {
         if (mellon_bullets[i]->update())
         {
-            for (int j = 0; j < zombies.size(); j++)
+            for (size_t j = 0; j < zombies.size(); j++)
             {
                 if (zombies[j]->same_row(mellon_bullets[i]->get_pos().y + 20) && zombies[j]->same_collum(mellon_bullets[i]->get_pos().x + 27))
                 {
@@ -76,9 +76,9 @@ void Handler::melon_strike()
 }
 void Handler::bullet_strike()
 {
-    for (int i = 0; i < zombies.size(); i++)
+    for (size_t i = 0; i < zombies.size(); i++)
     {
-        for (int j = 0; j < bullets.size(); j++)
+        for (size_t j = 0; j < bullets.size(); j++)
         {
             Vector2f b_p = bullets[j]->get_pos();
             if (zombies[i]->same_collum(b_p.x) && zombies[i]->same_row(b_p.y))
@@ -100,7 +100,7 @@ void Handler::bullet_strike()
 }
 void Handler::end_ckeck()
 {
-    for (int i = 0; i < zombies.size(); i++)
+    for (size_t i = 0; i < zombies.size(); i++)
     {
         zombies[i]->update();
         Vector2f zombie_ended_pos = zombies[i]->get_pos();
@@ -121,7 +121,7 @@ void Handler::sun_check()
         s = new Sun(sun_sett, sun_collum, -83, sun_sett[1]);
         new_sun(s);
     }
-    for (int i = 0; i < suns.size(); i++)
+    for (size_t i = 0; i < suns.size(); i++)
     {
         suns[i]->update();
         if ((suns[i]->get_pos()).y >= 600)
@@ -130,7 +130,7 @@ void Handler::sun_check()
 }
 void Handler::plants_check()
 {
-    for (int i = 0; i < plants.size(); i++)
+    for (size_t i = 0; i < plants.size(); i++)
     {
         if ((plants[i]->update()) && (plants[i]->placed_or_no))
         {
@@ -145,7 +145,7 @@ void Handler::plants_check()
 
             if (plants[i]->Type == "Nokhood")
             {
-                for (int j = 0; j < zombies.size(); j++)
+                for (size_t j = 0; j < zombies.size(); j++)
                 {
                     if ((zombies[j]->same_row(plants[i]->get_pos().y)) && (zombies[j]->get_pos().x >= plants[i]->get_pos().x))
                     {
@@ -162,7 +162,7 @@ void Handler::plants_check()
             }
             if (plants[i]->Type == "Snow")
             {
-                for (int j = 0; j < zombies.size(); j++)
+                for (size_t j = 0; j < zombies.size(); j++)
                 {
                     if ((zombies[j]->same_row(plants[i]->get_pos().y)) && (zombies[j]->get_pos().x >= plants[i]->get_pos().x))
                     {
@@ -181,7 +181,7 @@ void Handler::plants_check()
             {
                 int targeted_zombie;
                 bool first_zombie = true;
-                for (int j = 0; j < zombies.size(); j++)
+                for (size_t j = 0; j < zombies.size(); j++)
                 {
                     if ((zombies[j]->same_row(plants[i]->get_pos().y)) && (zombies[j]->get_pos().x >= plants[i]->get_pos().x))
                     {
@@ -207,15 +207,15 @@ void Handler::plants_check()
 
 void Handler::zombie_check()
 {
-    for (int i = 0; i < zombies.size(); i++)
+    for (size_t i = 0; i < zombies.size(); i++)
     {
-        for (int j = 0; j < plants.size(); j++)
+        for (size_t j = 0; j < plants.size(); j++)
         {
             if (zombies[i]->take_damage({plants[j]->get_pos().x + PLANTS_IMAGE_MIDDLE, plants[j]->get_pos().y + PLANTS_IMAGE_MIDDLE}))
             {
                 if (plants[j]->taking_damage(zombies[i]->get_damage()))
                 {
-                    for (int k = 0; k < zombies.size(); k++)
+                    for (size_t k = 0; k < zombies.size(); k++)
                     {
                         if (zombies[k]->same_collum(plants[j]->get_pos().x + PLANTS_IMAGE_MIDDLE) && zombies[k]->same_row(plants[j]->get_pos().y + PLANTS_IMAGE_MIDDLE))
                             zombies[k]->plant_eaten();
@@ -235,7 +235,7 @@ void Handler::update()
     zombie_spawn();
     end_ckeck();
     sun_check();
-    for (int i = 0; i < bullets.size(); i++)
+    for (size_t i = 0; i < bullets.size(); i++)
     {
         bullets[i]->update();
     }
@@ -244,30 +244,30 @@ void Handler::update()
 }
 void Handler::render(RenderWindow &window)
 {
-    for (int j = 0; j < plants.size(); j++)
+    for (size_t j = 0; j < plants.size(); j++)
     {
         plants[j]->render(window);
     }
-    for (int i = 0; i < zombies.size(); i++)
+    for (size_t i = 0; i < zombies.size(); i++)
     {
         zombies[i]->render(window);
     }
-    for (int j = 0; j < suns.size(); j++)
+    for (size_t j = 0; j < suns.size(); j++)
     {
         suns[j]->render(window);
     }
-    for (int i = 0; i < bullets.size(); i++)
+    for (size_t i = 0; i < bullets.size(); i++)
     {
         bullets[i]->render(window);
     }
-    for (int i = 0; i < mellon_bullets.size(); i++)
+    for (size_t i = 0; i < mellon_bullets.size(); i++)
     {
         mellon_bullets[i]->render(window);
     }
 }
 void Handler::checking_click_on_sun(Vector2f p)
 {
-    for (int i = 0; i < suns.size(); i++)
+    for (size_t i = 0; i < suns.size(); i++)
     {
         if (suns[i]->position_in_sprite(p))
         {
@@ -296,7 +296,7 @@ void Handler::new_bullet(Bullet *b)
 }
 bool Handler ::check_planted_plants(Vector2f p)
 {
-    for (int i = 0; i < plants.size(); i++)
+    for (size_t i = 0; i < plants.size(); i++)
     {
         if (plants[i]->in_plant_pos(p))
         {

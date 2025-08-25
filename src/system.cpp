@@ -188,10 +188,12 @@ void System::render()
 
 void System::update()
 {
-  handler->update();
-  Vector2i pos = Mouse::getPosition(window);
-  player->update(pos);
+    handler->update();
+    Vector2i mousePos = Mouse::getPosition(window);
+    Vector2f worldPos = window.mapPixelToCoords(mousePos);
+    player->update(Vector2i(worldPos.x, worldPos.y));
 }
+
 void System::handle_mouse_press(Event ev)
 {
   if (ev.mouseButton.button == Mouse::Right)
@@ -199,9 +201,14 @@ void System::handle_mouse_press(Event ev)
   Vector2i pos = {ev.mouseButton.x, ev.mouseButton.y};
   switch (state)
   {
-  case (IN_GAME):
-    player->handle_mouse_press(pos);
+  case (IN_GAME):{
+
+    // player->handle_mouse_press(pos);
+    Vector2i mousePos = Mouse::getPosition(window);
+    Vector2f worldPos = window.mapPixelToCoords(mousePos);
+    player->handle_mouse_press(Vector2i(worldPos.x, worldPos.y));
     break;
+  }
   case (PAUSE_MENU):
     break;
   case (MAIN_MENU):
