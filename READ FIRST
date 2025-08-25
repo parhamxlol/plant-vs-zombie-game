@@ -1,0 +1,3 @@
+on linux :
+first 'make'
+secont './pvz.out'
